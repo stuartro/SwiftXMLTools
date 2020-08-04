@@ -13,6 +13,11 @@ public class Parser {
         public var trimWhitespaces = true
         // when set to true the parser will preserve the namespace contexts of the source document (mapping prefix to uri)
         public var preserveSourceNamespaceContexts = false
+      
+      public init(trimWhitespaces: Bool = true, preserveSourceNamespaceContexts: Bool = false) {
+         self.trimWhitespaces = trimWhitespaces
+         self.preserveSourceNamespaceContexts = preserveSourceNamespaceContexts
+      }
     }
 
     public var options = Options()
