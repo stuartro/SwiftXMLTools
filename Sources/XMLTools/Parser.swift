@@ -122,20 +122,26 @@ private class ParserDelegate: NSObject, XMLParserDelegate {
     func parser(_ parser: XMLParser, foundCharacters string: String) {
         if options.trimWhitespaces {
             var trimmed = string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            if options.replaceDuplicateSpacesWithSingleSpace {
-               trimmed = trimmed.replacingOccurrences(of: "  ", with: " ")
-            }
+            trimmed = replaceDuplicateSpacesWithSingleSpaceIfOptionSet(text: trimmed)
             if trimmed.count > 0 {
                 currentElement?.appendText(trimmed)
             }
         } else {
-            var characters = string
-            if options.replaceDuplicateSpacesWithSingleSpace {
-               characters = characters.replacingOccurrences(of: "  ", with: " ")
-            }
-            currentElement?.appendText(characters)
+            currentElement?.appendText(replaceDuplicateSpacesWithSingleSpaceIfOptionSet(text: string))
         }
     }
+   
+   private func replaceDuplicateSpacesWithSingleSpaceIfOptionSet(text: String) -> String {
+      var chars = text
+      if options.replaceDuplicateSpacesWithSingleSpace {
+         chars = chars.replacingOccurrences(of: "  ", with: " ")
+         chars = chars.replacingOccurrences(of: "  ", with: " ")
+         chars = chars.replacingOccurrences(of: "  ", with: " ")
+         chars = chars.replacingOccurrences(of: "  ", with: " ")
+         chars = chars.replacingOccurrences(of: "  ", with: " ")
+      }
+      return chars
+   }
 
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         if let parent = currentElement?.parentNode as? Element {
