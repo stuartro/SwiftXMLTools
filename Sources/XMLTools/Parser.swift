@@ -11,12 +11,15 @@ public class Parser {
     public struct Options {
         // when set to true the parser will trim whitespaces and ommit the whitespace-only text nodes
         public var trimWhitespaces = true
+      
+         public var replaceDuplicateSpacesWithSingleSpace = false
         // when set to true the parser will preserve the namespace contexts of the source document (mapping prefix to uri)
         public var preserveSourceNamespaceContexts = false
       
-      public init(trimWhitespaces: Bool = true, preserveSourceNamespaceContexts: Bool = false) {
+      public init(trimWhitespaces: Bool = true, preserveSourceNamespaceContexts: Bool = false, replaceDuplicateSpacesWithSingleSpace: Bool = false) {
          self.trimWhitespaces = trimWhitespaces
          self.preserveSourceNamespaceContexts = preserveSourceNamespaceContexts
+         self.replaceDuplicateSpacesWithSingleSpace = replaceDuplicateSpacesWithSingleSpace
       }
     }
 
@@ -118,12 +121,19 @@ private class ParserDelegate: NSObject, XMLParserDelegate {
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
         if options.trimWhitespaces {
-            let trimmed = string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            var trimmed = string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            if options.replaceDuplicateSpacesWithSingleSpace {
+               trimmed = trimmed.replacingOccurrences(of: "  ", with: " ")
+            }
             if trimmed.count > 0 {
                 currentElement?.appendText(trimmed)
             }
         } else {
-            currentElement?.appendText(string)
+            var characters = string
+            if options.replaceDuplicateSpacesWithSingleSpace {
+               characters = characters.replacingOccurrences(of: "  ", with: " ")
+            }
+            currentElement?.appendText(characters)
         }
     }
 
